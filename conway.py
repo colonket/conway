@@ -17,25 +17,25 @@ BOARD_SIZE = 9
 BOARD_WIDTH = BOARD_SIZE
 BOARD_HEIGHT = BOARD_SIZE
 
-BOARD = [ [[(i,j),False] for i in range(BOARD_WIDTH)] for j in range(BOARD_HEIGHT)]
+BOARD = [ [False for _ in range(BOARD_WIDTH)] for _ in range(BOARD_HEIGHT)]
 
 # B3/S23
 COND_BORN = [3]
 COND_SURVIVE = [2,3]
 
 # How many seconds to wait between generations
-GEN_DELAY = 0.5
+GEN_DELAY = 1
 
 def main():
-    alive_cells = [(1,1),(1,2),(1,3)]
-    for a in alive_cells:
-        update_cell(a,True)
+    alive_cells = [(3,4),(3,5),(3,6)]
+    for ax,ay in alive_cells:
+        BOARD[ax][ay] = True
 
     try:
         gen_count = 0
         while True:
             # Refresh screen
-            os.system('clear') if os.name != 'nt' else os.system('cls')
+            clear_screen()
             print_board()
             print("Generation:",gen_count)
 
@@ -48,10 +48,12 @@ def main():
     except KeyboardInterrupt:
         print("\nExiting...")
         exit()
-    #test_cells = [(1,1),(0,0),(0,9),(9,0),(9,9)]
-    #for t in test_cells:
-        #n = get_neighbors(t)
-        #print(t,len(n),n)
+
+def clear_screen():
+    """
+    Clears terminal screen
+    """
+    os.system('clear') if os.name != 'nt' else os.system('cls')
 
 def print_board():
     """
@@ -61,24 +63,14 @@ def print_board():
         print("="*(BOARD_WIDTH*2+1))
 
     border()
-    for row in BOARD:
-        for _, is_alive in row:
-            if is_alive:
+    for i in range(BOARD_WIDTH):
+        for j in range(BOARD_HEIGHT):
+            if BOARD[i][j]:
                 print(' #',end='')
             else:
                 print('  ',end='')
         print()
     border()
-
-def get_cells():
-    """
-    Returns a list of all cells in the board
-    """
-    cells = []
-    for row in BOARD:
-        for c in row:
-            cells += [c]
-    return cells
 
 def get_neighbors(coord):
     """
@@ -100,45 +92,30 @@ def get_neighbors(coord):
     neighbors.remove(coord) # Remove coord from its list of neighbors
     return neighbors
 
-def update_cell(coord,state):
-    """
-    Update the living state of a cell at the given coordinate
-    """
-    for i in range(BOARD_WIDTH):
-        for j in range(BOARD_HEIGHT):
-            if BOARD[i][j][0] == coord:
-                BOARD[i][j][1] = state
-
-def get_cell_state(coord):
-    """
-    Get the living state of a cell at the given coordinate
-    """
-    i,j = coord
-    return BOARD[i][j][1]
-
 def next_generation():
     """
     Compute the next generation of cells' living or dead state
     """
+    new_board = BOARD
     for i in range(BOARD_WIDTH):
         for j in range(BOARD_HEIGHT):
-            coord, alive_state = BOARD[i][j]
-
+            coord = (i,j)
+            alive = BOARD[i][j]
+            
             # Determine conditions
-            n_alive = 0
-            #print(coord,'=>',end=' ')
+            n_living = 0
             for neigh in get_neighbors(coord):
-                #print(neigh,end=' ')
-                if get_cell_state(neigh):
-                    n_alive += 1
-            #print()
+                nx,ny = neigh
+                if BOARD[nx][ny]:
+                    n_living += 1
 
-            if alive_state and n_alive not in COND_SURVIVE:
+            if alive and (n_living not in COND_SURVIVE):
                 # Living cell dies
-                update_cell(coord, False)
-            elif n_alive in COND_BORN:
+                new_board[i][j] = False
+            elif n_living in COND_BORN:
                 # Dead cell is born again
-                update_cell(coord, True)
+                new_board[i][j] = True
+    BOARD[:] = new_board
 
 if __name__ == '__main__':
     main()
