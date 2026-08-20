@@ -1,6 +1,6 @@
 # Conway's Game of Life
 
-Felt inspired after watching caryhk's ["The Conway Multiverse"](https://www.youtube.com/watch?v=QK_KZv-YyOc) recreate Conway's Game of Life without an LLM agent.
+Felt inspired after watching caryhk's ["The Conway Multiverse"](https://www.youtube.com/watch?v=QK_KZv-YyOc) to recreate Conway's Game of Life without an LLM agent.
 
 ## Usage
 You can run `conway.py` to see a simple blinker shape with:
