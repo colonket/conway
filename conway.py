@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 ---------------------
 Conway's Game of Life
