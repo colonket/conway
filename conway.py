@@ -124,6 +124,8 @@ def run_game(seed_cells,
             clear_screen()
             print_board(board,board_width,board_height)
             print("Generation:",gen_count)
+            print("B"+''.join(map(str,cond_born))+"/S"+''.join(map(str,cond_survive)))
+            print("Press ^C to exit")
 
             # Compute next generation of cells
             next_generation(
