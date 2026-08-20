@@ -9,6 +9,23 @@ You can run `conway.py` to see a simple blinker shape with:
 python3 conway.py
 ```
 
+```
+ # # # # # # # #
+#               #
+#               #
+#               #
+#        *      #
+#        *      #
+#        *      #
+#               #
+#               #
+ # # # # # # # #
+Generation: 3
+B3/S23
+Press ^C to exit
+```
+
+
 You can import the main script into another file to run your own simulations like so:
 ```python3
 # glider.py
