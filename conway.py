@@ -13,9 +13,8 @@ implementation, though it's something to wanted to try for fun.
 import os
 from time import sleep
 
-BOARD_SIZE = 9
-BOARD_WIDTH = BOARD_SIZE
-BOARD_HEIGHT = BOARD_SIZE
+BOARD_WIDTH = 9
+BOARD_HEIGHT = 9
 
 BOARD = [ [False for _ in range(BOARD_WIDTH)] for _ in range(BOARD_HEIGHT)]
 
@@ -28,7 +27,8 @@ GEN_DELAY = 1
 
 def main():
     alive_cells = [(3,4),(3,5),(3,6)]
-    for ax,ay in alive_cells:
+    for c in alive_cells:
+        ax, ay = c 
         BOARD[ax][ay] = True
 
     try:
@@ -59,35 +59,41 @@ def print_board():
     """
     Prints the board state
     """
+    def print_nums():
+        print(" "+" ".join(str(i) for i in range(BOARD_WIDTH)))
     def border():
         print("="*(BOARD_WIDTH*2+1))
 
-    border()
-    for i in range(BOARD_WIDTH):
-        for j in range(BOARD_HEIGHT):
+    print_nums()
+    #border()
+    for i in range(BOARD_HEIGHT):
+        line_out = str(i)
+        for j in range(BOARD_WIDTH):
             if BOARD[i][j]:
-                print(' #',end='')
+                line_out += '# '
             else:
-                print('  ',end='')
-        print()
-    border()
+                line_out += '  '
+        line_out = line_out[:-1]
+        line_out += str(i)
+        print(line_out)
+    #border()
+    print_nums()
 
 def get_neighbors(coord):
     """
     Returns a list of the 3-8 neighboring cells for a given cell at (coord)
     """
-    cx, cy = coord
+    ci, cj = coord
 
     neighbors = []
 
     # Look at cells 1 unit 
     adj = [-1,0,1]
-    for x in adj:
-        for y in adj:
-            nx,ny = cx+x,cy+y
-            if nx < 0 or ny < 0 or nx >= BOARD_WIDTH or ny >= BOARD_HEIGHT:
-                continue # Skip if neighbor doesn't exist
-            neighbors += [(nx,ny)]
+    for i in adj:
+        for j in adj:
+            ni,nj = ci+i,cj+j
+            if (0 <= ni < BOARD_HEIGHT) and (0 <= nj < BOARD_WIDTH):
+                neighbors += [(ni,nj)]
 
     neighbors.remove(coord) # Remove coord from its list of neighbors
     return neighbors
@@ -96,26 +102,25 @@ def next_generation():
     """
     Compute the next generation of cells' living or dead state
     """
-    new_board = BOARD
-    for i in range(BOARD_WIDTH):
-        for j in range(BOARD_HEIGHT):
+    new_board = [row[:] for row in BOARD] # Deep copy of BOARD
+    for i in range(BOARD_HEIGHT):
+        for j in range(BOARD_WIDTH):
             coord = (i,j)
             alive = BOARD[i][j]
             
             # Determine conditions
             n_living = 0
-            for neigh in get_neighbors(coord):
-                nx,ny = neigh
-                if BOARD[nx][ny]:
-                    n_living += 1
+            neighs = get_neighbors(coord)
+            n_living = sum([BOARD[ni][nj] for ni,nj in neighs])
 
             if alive and (n_living not in COND_SURVIVE):
                 # Living cell dies
                 new_board[i][j] = False
-            elif n_living in COND_BORN:
+            if (not alive) and (n_living in COND_BORN):
                 # Dead cell is born again
                 new_board[i][j] = True
-    BOARD[:] = new_board
+    BOARD[:] = [row[:] for row in new_board]
 
 if __name__ == '__main__':
     main()
+
